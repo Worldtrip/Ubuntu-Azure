@@ -3,3 +3,4 @@ provider.tf
 terraform.tfstate
 terraform.tfstate.backup
 ubuntu-priv.ppk
+ubuntu-pub.key

@@ -9,3 +9,9 @@ variable "tags" {
         env     = "training"
     }
 }
+variable "vm" {
+    default     = {
+        server-name  = "ubuntu-test"
+        env     = "training"
+    }
+}

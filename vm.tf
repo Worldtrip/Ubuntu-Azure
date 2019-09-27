@@ -41,7 +41,7 @@ resource "azurerm_virtual_machine" "myterraformvm" {
     }
 
     os_profile {
-        computer_name  = "Ubuntu-test"
+        computer_name  = "${var.vm.server-name}"
         admin_username = "azureuser"
     }
 
