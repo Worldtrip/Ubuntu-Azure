@@ -31,3 +31,12 @@ resource "azurerm_virtual_machine" "myterraformvm" {
             key_data = "ssh-rsa AAAAB3Nz{snip}hwhqT9h"
         }
     }
+boot_diagnostics {
+        enabled     = "true"
+        storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
+    }
+
+    tags = {
+        environment = "Ubuntu Demo"
+    }
+}
