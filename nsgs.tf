@@ -6,35 +6,34 @@ resource "azurerm_resource_group" "nsgs" {
    name         = "NSGs"
    location     = "${var.loc}"
    tags         = "${var.tags}"
-}
+   }
 
-resource "azurerm_network_security_group" "resource_group_default" {
-   name = "ResourceGroupDefault"
-   resource_group_name  = "${azurerm_resource_group.nsgs.name}"
-   location             = "${azurerm_resource_group.nsgs.location}"
-   tags                 = "${azurerm_resource_group.nsgs.tags}"
-}
+resource "azurerm_network_security_group" "nsgs" {
+    name                = "myNetworkSecurityGroup"
+    location            = "${var.loc}"
+    resource_group_name = "${azurerm_resource_group.nsgs.name}"
+    
+    security_rule {
+        name                       = "SSH"
+        priority                   = 1001
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "22"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
 
-
-resource "azurerm_network_security_rule" "AllowSSH" {
-    name = "AllowSSH"
-    resource_group_name         = "${azurerm_resource_group.nsgs.name}"
-    network_security_group_name = "${azurerm_network_security_group.resource_group_default.name}"
-
-    priority                    = 1010
-    access                      = "Allow"
-    direction                   = "Inbound"
-    protocol                    = "Tcp"
-    destination_port_range      = 22
-    destination_address_prefix  = "*"
-    source_port_range           = "*"
-    source_address_prefix       = "*"
+    tags = {
+        environment = "Terraform Demo"
+    }
 }
 
 resource "azurerm_network_security_rule" "AllowHTTP" {
     name = "AllowHTTP"
     resource_group_name         = "${azurerm_resource_group.nsgs.name}"
-    network_security_group_name = "${azurerm_network_security_group.resource_group_default.name}"
+    network_security_group_name = "${azurerm_network_security_group.nsgs.name}"
 
     priority                    = 1020
     access                      = "Allow"
@@ -50,7 +49,7 @@ resource "azurerm_network_security_rule" "AllowHTTP" {
 resource "azurerm_network_security_rule" "AllowHTTPS" {
     name = "AllowHTTPS"
     resource_group_name         = "${azurerm_resource_group.nsgs.name}"
-    network_security_group_name = "${azurerm_network_security_group.resource_group_default.name}"
+    network_security_group_name = "${azurerm_network_security_group.nsgs.name}"
 
     priority                    = 1021
     access                      = "Allow"
@@ -86,7 +85,7 @@ resource "azurerm_network_security_group" "nic_ubuntu" {
 resource "azurerm_public_ip" "myterraformpublicip" {
     name                         = "myPublicIP"
     location                     = "eastus"
-    resource_group_name          = "${azurerm_resource_group.myterraformgroup.name}"
+    resource_group_name          = "${azurerm_resource_group.nsgs.name}"
     allocation_method            = "Dynamic"
 
     tags = {

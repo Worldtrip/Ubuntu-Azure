@@ -1,7 +1,20 @@
+
+# Create storage account for boot diagnostics
+resource "azurerm_storage_account" "mystorageaccount" {
+    name                        = "diag${random_id.randomId.hex}"
+    resource_group_name         = "${azurerm_resource_group.nsgs.name}"
+    location                    = "eastus"
+    account_tier                = "Standard"
+    account_replication_type    = "LRS"
+
+    tags = {
+        environment = "Terraform Demo"
+    }
+}
 resource "azurerm_virtual_machine" "myterraformvm" {
     name                  = "myVM"
     location              = "${var.loc}"
-    resource_group_name   = "${azurerm_resource_group.myterraformgroup.name}"
+    resource_group_name   = "${azurerm_resource_group.nsgs.name}"
     network_interface_ids = ["${azurerm_network_interface.myterraformnic.id}"]
     vm_size               = "Standard_DS1_v2"
 
@@ -31,8 +44,8 @@ resource "azurerm_virtual_machine" "myterraformvm" {
             key_data = "ssh-rsa AAAAB3Nz{snip}hwhqT9h"
         }
     }
-boot_diagnostics {
-        enabled     = "true"
+    boot_diagnostics {
+        enabled = "true"
         storage_uri = "${azurerm_storage_account.mystorageaccount.primary_blob_endpoint}"
     }
 
