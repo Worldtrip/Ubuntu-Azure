@@ -1,9 +1,17 @@
-
+# Generate random text for a unique storage account name
+resource "random_id" "randomId" {
+    keepers = {
+        # Generate a new ID only when a new resource group is defined
+        resource_group = "${azurerm_resource_group.nsgs.name}"
+    }
+    
+    byte_length = 8
+}
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "mystorageaccount" {
     name                        = "diag${random_id.randomId.hex}"
     resource_group_name         = "${azurerm_resource_group.nsgs.name}"
-    location                    = "eastus"
+    location                    = "${var.loc}"
     account_tier                = "Standard"
     account_replication_type    = "LRS"
 
@@ -33,7 +41,7 @@ resource "azurerm_virtual_machine" "myterraformvm" {
     }
 
     os_profile {
-        computer_name  = "myvm"
+        computer_name  = "Ubuntu-test"
         admin_username = "azureuser"
     }
 
@@ -41,7 +49,7 @@ resource "azurerm_virtual_machine" "myterraformvm" {
         disable_password_authentication = true
         ssh_keys {
             path     = "/home/azureuser/.ssh/authorized_keys"
-            key_data = "ssh-rsa AAAAB3Nz{snip}hwhqT9h"
+            key_data = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAgGoPlW40iMimrPYPBihJTnqt7WgV0KzaPDWwrZeVp+Lbuhd7biM4RAQOuIFErQpMP7YCNME+rBQrHcPqd8SIiUZACaenE1Br5xpMckTnLI3JRGr5pBL6OuQS5y20LDSMuOwIpSqTj43ptCnf6hHpHbrKfnJgp8g4awwUQY3sT8tQ4JpWMbSsmdilfSihOSezUifk5Rf77PzAKelVDBcxQZE6kyw5oX5ubQ4cLHy3w6+th6BMPAhFuCszkakVLbRFUNWVf7CSu8p5dyL3u9xQwmxOeSM3YkLep10i5O7JEeH5jq4LGqJwBsdd+E7zvDVrxvtQ3GWE3A02PS+nNiCHgQ=="
         }
     }
     boot_diagnostics {

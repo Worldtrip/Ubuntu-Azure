@@ -84,7 +84,7 @@ resource "azurerm_network_security_group" "nic_ubuntu" {
 # Create public IP address
 resource "azurerm_public_ip" "myterraformpublicip" {
     name                         = "myPublicIP"
-    location                     = "eastus"
+    location                     = "${var.loc}"
     resource_group_name          = "${azurerm_resource_group.nsgs.name}"
     allocation_method            = "Dynamic"
 
